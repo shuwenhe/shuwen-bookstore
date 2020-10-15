@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>书城首页</title>
+<link type="text/css" rel="stylesheet" href="/static/css/style.css" >
+<script src ="/static/script/jquery-1.7.2.js"></script>
+<script>
+$(function(){
+	$(".addBook2Cart").click(function(){  // 给添加购物车的按钮绑定单击事件
+		var bookId = $(this).attr("id");  // 获取要添加的图书的ID,$(this)$包一个变成jQuery,点获取属性attr方法
+		var url = "/addBook2Cart"     // 设置请求的URL
+		var param = {"bookId":bookId} // 设置请求的参数
+		$.post(url,param,function(res){  // 发送Ajax请求：param是请求参数，function是回调函数
+		if(res == "please login first!"){
+			location = "/pages/user/login.html"
+		}else{
+			// Set the response information to the span
+		}
+		$("#bookMsg").text(res)// Set the response information to the span
+		});
+	});
+});
+</script>
+</head>
+<body>
+
+	<div id="header">
+			<img class="logo_img" alt="" src="/static/img/logo.gif" >
+			<span class="wel_word">网上书城</span>
+			{{if .IsLogin}}
+			<div>
+				<span>欢迎<span class="um_span">{{.Username}}</span>光临书城</span>
+				<a href="/getCartInfo">购物车</a>
+				<a href="/getOrderByUserID">我的订单</a>
+				<a href="/logout">注销</a>&nbsp;&nbsp;
+				<a href="/">返回</a>
+			</div>
+			{{else}}
+			<div>
+				<a href="/pages/user/login.html">登录</a> | 
+				<a href="/pages/user/regist.html">注册</a> &nbsp;&nbsp;
+				<a href="/pages/cart/cart.html">购物车</a>
+				<a href="/pages/manager/manager.html">后台管理</a>
+			</div>
+			{{end}}
+	</div>
+	
+	<div id="main">
+		<div id="book">
+			<div class="book_cond">
+
+			<form action="/getPageBooksByPrice" method="POST">
+				价格：<input type="text" name="min"> 元 - <input type="text" name="max"> 元 <button>查询</button>
+			</form>
+
+			</div>
+			<div style="text-align: center">
+				<div>
+					<span style="color: red" id="bookMsg"></span></span>
+				</div>
+			</div>
+			{{range .Books}}
+			<div class="b_list">
+				<div class="img_div">
+					<img class="book_img" alt="" src="{{.ImgPath}}" />
+				</div>
+				<div class="book_info">
+					<div class="book_name">
+						<span class="sp1">书名:</span>
+						<span class="sp2">{{.Title}}</span>
+					</div>
+					<div class="book_author">
+						<span class="sp1">作者:</span>
+						<span class="sp2">{{.Author}}</span>
+					</div>
+					<div class="book_price">
+						<span class="sp1">价格:</span>
+						<span class="sp2">￥{{.Price}}</span>
+					</div>
+					<div class="book_sales">
+						<span class="sp1">销量:</span>
+						<span class="sp2">{{.Sales}}</span>
+					</div>
+					<div class="book_amount">
+						<span class="sp1">库存:</span>
+						<span class="sp2">{{.Stock}}</span>
+					</div>
+					<div class="book_add">
+					{{if .Stock}}
+						<button id="{{.ID}}" class="addBook2Cart">加入购物车</button>
+					{{else}}
+					<span style="color:red">sold out...</span>
+					{{end}}
+					</div>
+				</div>
+			</div>
+			{{end}}
+		</div>
+
+		<div id="page_nav">
+		{{if .IsHasPrev}}
+		<a href="/getPageBooksByPrice?min={{.MinPrice}}&max={{.MaxPrice}}">首页</a>
+		<a href="/getPageBooksByPrice?pageNo={{.GetPrevPageNo}}&min={{.MinPrice}}&max={{.MaxPrice}}">上一页</a>
+		{{end}}
+		当前是第{{.PageNo}}页，共{{.TotalPageNo}}页，共{{.TotalRecord}}条记录
+		{{if .IsHasNext}}
+		<a href="?pageNo={{.GetNextPageNo}}&min={{.MinPrice}}&max={{.MaxPrice}}">下一页</a>
+		<a href="getPageBooksByPrice/?pageNo={{.TotalPageNo}}&min={{.MinPrice}}&max={{.MaxPrice}}">末页</a>
+		{{end}}
+		 到第<input value="{{.PageNo}}" name="pn" id="pn_input"/>页
+		<input type="button" value="确定" id="sub">
+		<script>
+		   $("#sub").click(function(){// 给确定按钮绑定单击事件
+			   var pageNo = $("#pn_input").val();// 获取输入的页码
+			   location = "/getPageBooksByPrice?pageNo="+pageNo+"&min={{.MinPrice}}&max={{.MaxPrice}}"
+		   });
+		</script>
+		</div>
+	
+	</div>
+	
+	<div id="bottom">
+		<span>
+			bookstore 算法第一人北大何书文-书文教育 电话微信：15010729356 邮箱：1201220707@pku.edu.cn
+		</span>
+	</div>
+</body>
+</html>

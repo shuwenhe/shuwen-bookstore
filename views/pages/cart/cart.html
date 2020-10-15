@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cart</title>
+<link type="text/css" rel="stylesheet" href="/static/css/style.css" >
+<script src="static/script/jquery-1.7.2.js"></script>
+<script>
+    $(function(){
+		$("#emptyCart").click(function(){// Bind the click event to the hyperlink that clears the shopping cart
+			return confirm("Are you sure empty the cart?");// Are you sure empty the cart?
+		});
+
+		$(".deleteCartItem").click(function(){// Bind the click event to the hyperlink of the deleted cart
+			var title = $(this).attr("id"); // return the value of the book's title Get the name of the book
+			return confirm("Are you sure delete to "+title+" this book?");
+		})
+		
+		$(".updateCartItem").change(function(){// Bind the change event to the input that enters the number of cartItems
+			var cartItemId = $(this).attr("id");// Get the ID of the cartItem
+			var bookCount = $(this).val();// Get the number of books entered by the user
+			//location = "/updateCartItem?cartItemId="+cartItemId+"&bookCount="+bookCount;// send request
+			var url = "/updateCartItem"
+			var params = {"cartItemId":cartItemId,"bookCount":bookCount}
+			var $tdEle = $(this).parent().next().next();
+			$.post(url,params,function(res){
+				$("#totalCount").text(res.TotalCount);
+				$("#totalAmount").text(res.TotalAmount);
+				$tdEle.text(res.Amount);
+			},"json");
+		});
+	});
+</script>
+</head>
+<body>
+	<div id="header">
+			<img class="logo_img" alt="" src="/static/img/logo.gif" >
+			<span class="wel_word">购物车</span>
+			<a href="/getMyorder">我的订单</a>
+			{{if .UserID}}
+			<div>
+				<span>欢迎<span class="um_span">{{.UserName}}</span>光临书城</span>
+				<a href="/getCartInfo">购物车</a>
+				<a href="/getMyOrder">我的订单</a>
+				<a href="/logout">注销</a>&nbsp;&nbsp;
+				<a href="/">返回</a>
+			</div>
+			{{else}}
+			<div>
+				<a href="/pages/user/login.html">登录</a> | 
+				<a href="/pages/user/regist.html">注册</a> &nbsp;&nbsp;
+				<a href="/pages/manager/manager.html">后台管理</a>
+				<a href="/getOrders">订单管理</a>
+			</div>
+			{{end}} 
+	</div>
+
+	<div id="main">
+	{{if .}}
+		<table>
+			<tr>
+				<td>商品名称</td>
+				<td>数量</td>
+				<td>单价</td>
+				<td>金额</td>
+				<td>操作</td>
+			</tr>		
+    {{range .CartItems}}
+			<tr>
+				<td>{{.Book.Title}}</td>
+				<td>
+					<input id="{{.CartItemID}}" class="updateCartItem" type="text" value="{{.Count}}" style="text-align:center;width:50px">
+				</td>
+				<td>{{.Book.Price}}</td>
+				<td>{{.Amount}}</td>
+				<td><a id="{{.Book.Title}}" class="deleteCartItem" href="/deleteCartItem?cartItemId={{.CartItemID}}">Delete</a></td>
+			</tr>	
+	{{end}}
+		</table>
+		<div class="cart_info">
+			<span class="cart_span">购物车中共有<span class="b_count" id="totalCount">{{.TotalCount}}</span>件商品</span>
+			<span class="cart_span">总金额<span class="b_price" id="totalAmount">{{.TotalAmount}}</span>元</span>
+			<span class="cart_span"><a href="/">继续购物</a></span>
+			<span class="cart_span"><a href="/deleteCart?cartId={{.CartID}}" id="emptyCart">清空购物车</a></span>
+			<span class="cart_span"><a href="/checkout">去结账</a></span>
+		</div>
+	{{else}}
+		<br><br/><br/><br/><br/><br/><br/>
+	    <h1 align="center">购物车为空，快去<a href="/" style="color:red">购物</a> 吧！</h1>	
+	{{end}}
+	</div>
+	
+	<div id="bottom">
+		<span>
+			bookstore 算法第一人北大何书文-书文教育 电话微信：15010729356 邮箱：1201220707@pku.edu.cn
+		</span>
+	</div>
+</body>
+</html>
