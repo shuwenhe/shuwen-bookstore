@@ -13,6 +13,7 @@ import (
 func AddBook(b *model.Book) error {
 	sql := "insert into books(title,author,price,sales,stock,img_path) values(?,?,?,?,?,?)"
 	_, err := utils.Db.Exec(sql, &b.Title, &b.Author, &b.Price, &b.Sales, &b.Stock, &b.ImgPath)
+	fmt.Println("b = ", b)
 	if err != nil {
 		return err
 	}

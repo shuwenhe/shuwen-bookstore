@@ -14,9 +14,9 @@ func testGetBooks(t *testing.T) {
 	}
 }
 
-func testAddBooks(t *testing.T) {
+func TestAddBooks(t *testing.T) {
 	book := &model.Book{
-		Title:   "三国演义",
+		Title:   "三国演义456",
 		Author:  "罗贯中",
 		Price:   59.31,
 		Sales:   91,
