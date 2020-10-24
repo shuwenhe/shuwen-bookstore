@@ -36,7 +36,6 @@ func GetBooks() ([]*model.Book, error) {
 }
 
 func DeleteBook(bookId string) error {
-	fmt.Println("bookId = ", bookId)
 	sql := "delete from books where id=?"
 	_, err := utils.Db.Exec(sql, bookId)
 	if err != nil {

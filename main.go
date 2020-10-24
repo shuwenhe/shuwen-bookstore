@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", controller.GetPageBooksByPrice)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("views/static"))))
 	http.Handle("/pages/", http.StripPrefix("/pages/", http.FileServer(http.Dir("views/pages"))))
 
+	http.HandleFunc("/", controller.GetPageBooksByPrice)
 	http.HandleFunc("/login", controller.Login)
 	http.HandleFunc("/logout", controller.Logout)
 	http.HandleFunc("/regist", controller.Regist)
